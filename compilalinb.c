@@ -117,6 +117,7 @@ funcp CompilaLinB(FILE *f, unsigned char codigo[])
   }
   printf("}\n");
 
+  printf("Num linhas: %d\n", line);
   printf("Linhas = { ");
   for(int i = 1; i<line; i++)
   {
