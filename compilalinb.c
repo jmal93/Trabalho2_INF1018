@@ -20,9 +20,7 @@ funcp CompilaLinB(FILE *f, unsigned char codigo[])
   int line = 1;
   int parsedLines[50];
   int isParsing = 0;
-  int lastIndex = 0;
-
-
+  int lastIndex = -1;
 
   while(!feof(f))
   {
@@ -45,7 +43,6 @@ funcp CompilaLinB(FILE *f, unsigned char codigo[])
       isParsing++;
     }
     char c = fgetc(f);
-    printf("Caractere: %c\n", c);
     switch (c){
       case 'p':
       case 'v':
@@ -97,7 +94,7 @@ funcp CompilaLinB(FILE *f, unsigned char codigo[])
     }
     else if(isParsing == 0)
     {
-      parsedLines[line] = index - lastIndex + 1; //salva quantos bytes tiveram na ultima linha 
+      parsedLines[line] = index - lastIndex; //salva quantos bytes tiveram na ultima linha 
       lastIndex = index;
       line ++;
       fscanf(f, " ");
@@ -323,7 +320,6 @@ void atribui(char var0,int idx0, unsigned char codigo[], int* index)
   if(var0 == 'v')
   {
     //Escrever o inicio de movl de ecx pra pilha
-    printf("Atribui ecx para v%d\n", idx0);
     codigo[++(index2)] = 0x89;
     codigo[++(index2)] = 0x4d;
     switch (idx0) // Pra qual variavel estatica sera atribuido?
@@ -349,7 +345,6 @@ void atribui(char var0,int idx0, unsigned char codigo[], int* index)
   else
   {
     //Atribui pra parametro
-    printf("Atribui ecx pra p%d\n", idx0);
     codigo[++(index2)] = 0x89;
     if(idx0 == 1)
     {
