@@ -46,7 +46,8 @@ funcp CompilaLinB(FILE *f, unsigned char codigo[]) {
     case 'v': {
       int idx0, idx1, idx2;
       char var0 = c, var1, var2, op;
-      if (fscanf(f, "%d <= %c%d %c %c%d", &idx0, &var1, &idx1, &op, &var2, &idx2) == 6) {
+      if (fscanf(f, "%d <= %c%d %c %c%d", &idx0, &var1, &idx1, &op, &var2,
+                 &idx2) == 6) {
         switch (op) {
         case '+':
           soma(var0, idx0, var1, idx1, var2, idx2, codigo, &index);
@@ -75,14 +76,26 @@ funcp CompilaLinB(FILE *f, unsigned char codigo[]) {
       codigo[++index] = 0xc3;
       fscanf(f, "et");
       break;
-    case 'i':
+    case 'i': {
+      int idx0, idx1;
+      char var0;
+      if (fscanf(f, "f <= %c%d %d", &var0, &idx0, &idx1) == 3) {
+        switch (var0) {
+          case 'v':
+            break;
+          case 'p':
+            break;
+        }
+      }
       break;
+    }
     default:
       break;
     }
 
     if (isParsing == 0) {
-      parsedLines[line] = index - lastIndex; // salva quantos bytes tiveram na ultima linha
+      parsedLines[line] =
+          index - lastIndex; // salva quantos bytes tiveram na ultima linha
       lastIndex = index;
       line++;
       fscanf(f, " ");
@@ -364,7 +377,6 @@ void mult(char var0, int idx0, char var1, int idx1, char var2, int idx2,
 
   // Escrever o inicio de movl pra pilha
   atribui(var0, idx0, codigo, index);
-
 }
 
 void sub(char var0, int idx0, char var1, int idx1, char var2, int idx2,
@@ -378,3 +390,43 @@ void sub(char var0, int idx0, char var1, int idx1, char var2, int idx2,
   // Escrever o inicio de movl pra pilha
   atribui(var0, idx0, codigo, index);
 }
+
+void compara(char var0, int idx0, int idx1, unsigned char codigo[], int *index){
+  int index2 = *index;
+
+  // Código inicial
+  codigo[++(index2)] = 0x83;
+  if (var0 == 'v'){
+
+    // Códigos iniciais
+    codigo[++(index2)] = 0x7c;
+    codigo[++(index2)] = 0x24;
+
+    switch (idx0) // Pra qual variavel estatica sera atribuido?
+    {
+    case 1:
+      // movl %ecx, -8(%rbp)
+      codigo[++(index2)] = 0xf8;
+      break;
+    case 2:
+      // movl %ecx, -16(%rbp)
+      codigo[++(index2)] = 0xf0;
+      break;
+    case 3:
+      // movl %ecx, -24(%rbp)
+      codigo[++(index2)] = 0xe8;
+      break;
+    case 4:
+      // movl %ecx, -32(%rbp)
+      codigo[++(index2)] = 0xe0;
+      break;
+    }
+  }
+  else {
+    if (idx0 == 1) codigo[++(index2)] = 0xff;
+    else codigo[++(index2)] = 0xfe;
+  }
+
+  *index = index2;
+}
+
