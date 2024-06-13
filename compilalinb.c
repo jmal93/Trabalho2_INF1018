@@ -3,8 +3,10 @@
 
 typedef int (*funcp)();
 void escreveInt(int n, unsigned char codigo[], int *index);
+
 void compara(char var0, int idx0, int idx1, unsigned char codigo[], int *index);
 void calculaDeslocamento(int linhaAtual, int parsedLines[], int num, unsigned char codigo[], int *index);
+
 void soma(char var0, int idx0, char var1, int idx1, char var2, int idx2,
           unsigned char codigo[], int *index);
 void sub(char var0, int idx0, char var1, int idx1, char var2, int idx2,
@@ -24,6 +26,7 @@ funcp CompilaLinB(FILE *f, unsigned char codigo[]) {
   int lastIndex = 0;
   int parsedLines[50];
   parsedLines[0] = 0;
+
 
   while (!feof(f)) {
     if (isParsing == 1) {
@@ -82,6 +85,7 @@ funcp CompilaLinB(FILE *f, unsigned char codigo[]) {
     case 'i': {
       int idx0, idx1;
       char var0;
+
       if (fscanf(f, "f %c%d %d", &var0, &idx0, &idx1) == 3) {
         compara(var0, idx0, idx1, codigo, &index);
         if (isParsing == 0) {
@@ -92,6 +96,7 @@ funcp CompilaLinB(FILE *f, unsigned char codigo[]) {
         }
         else {
             calculaDeslocamento(line, parsedLines, idx1, codigo, &index);
+
         }
       }
       break;
@@ -101,7 +106,9 @@ funcp CompilaLinB(FILE *f, unsigned char codigo[]) {
     }
 
     if (isParsing == 0) {
+
       parsedLines[line] = index;
+
       lastIndex = index;
       line++;
       fscanf(f, " ");
@@ -110,7 +117,9 @@ funcp CompilaLinB(FILE *f, unsigned char codigo[]) {
       if (feof(f)) {
         isParsing++;
         index = lastIndex = -1;
+
         line = 1;
+
         rewind(f);
       }
     } else {
@@ -128,7 +137,9 @@ funcp CompilaLinB(FILE *f, unsigned char codigo[]) {
 
   printf("Num linhas: %d\n", line);
   printf("Linhas = { ");
+
   for (int i = 1; i < line; i++) {
+
     printf("%d ", parsedLines[i]);
   }
   printf("}\n");
@@ -432,12 +443,15 @@ void compara(char var0, int idx0, int idx1, unsigned char codigo[], int *index){
     if (idx0 == 1) codigo[++(index2)] = 0xff;
     else codigo[++(index2)] = 0xfe;
   }
+
   codigo[++(index2)] = 0x00;
   codigo[++(index2)] = 0x0f;
   codigo[++(index2)] = 0x85;
 
+
   *index = index2;
 }
+
 
 void calculaDeslocamento(int linhaAtual, int parsedLines[], int num, unsigned char codigo[], int *index) {
   int index2 = *index;
@@ -458,3 +472,5 @@ void calculaDeslocamento(int linhaAtual, int parsedLines[], int num, unsigned ch
 
   *index = index2;
 }
+
+
