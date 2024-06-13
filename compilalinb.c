@@ -75,6 +75,8 @@ funcp CompilaLinB(FILE *f, unsigned char codigo[]) {
       codigo[++index] = 0xc3;
       fscanf(f, "et");
       break;
+    case 'i':
+      break;
     default:
       break;
     }
