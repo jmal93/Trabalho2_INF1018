@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "header.h"
+#include "compilalinb.h"
 
 int main(int argc, char *argv[]) {
 	FILE *Linb = fopen(argv[1], "r");

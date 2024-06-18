@@ -1,23 +1,27 @@
-#include "header.h"
+#include "compilalinb.h"
 #include <stdio.h>
+/* Vagner_Messias_Da_Costa_Junior 2112851 3WA */
+/* Nome_do_Aluno2 Matricula Turma */
 
 typedef int (*funcp)();
-void escreveInt(int n, unsigned char codigo[], int *index);
-
+//Funcoes de Deslocamento
 void compara(char var0, int idx0, int idx1, unsigned char codigo[], int *index);
 void calculaDeslocamento(int linhaAtual, int parsedLines[], int num, unsigned char codigo[], int *index);
 
-void soma(char var0, int idx0, char var1, int idx1, char var2, int idx2,
-          unsigned char codigo[], int *index);
-void sub(char var0, int idx0, char var1, int idx1, char var2, int idx2,
-         unsigned char codigo[], int *index);
-void mult(char var0, int idx0, char var1, int idx1, char var2, int idx2,
-          unsigned char codigo[], int *index);
+//Operacoes 
+void soma(char var0, int idx0, char var1, int idx1, char var2, int idx2,unsigned char codigo[], int *index);
+void sub(char var0, int idx0, char var1, int idx1, char var2, int idx2, unsigned char codigo[], int *index);
+void mult(char var0, int idx0, char var1, int idx1, char var2, int idx2, unsigned char codigo[], int *index);
+
+//Calculo das operacoes em ecx
 void sublEcx(char c, int n, unsigned char codigo[], int *index);
 void addlEcx(char c, int n, unsigned char codigo[], int *index);
 void imullEcx(char c, int n, unsigned char codigo[], int *index);
+void movlEcx(char c, int n, unsigned char codigo[], int *index);
+
+//atribuicao à uma variavel ou parâmetro
 void atribui(char var0, int idx0, unsigned char codigo[], int *index);
-// multvar
+
 
 funcp CompilaLinB(FILE *f, unsigned char codigo[]) {
   int index = 0;
@@ -90,13 +94,12 @@ funcp CompilaLinB(FILE *f, unsigned char codigo[]) {
         compara(var0, idx0, idx1, codigo, &index);
         if (isParsing == 0) {
           codigo[++index] = 0x00;
-          codigo[++index] = 0x00;
-          codigo[++index] = 0x00;
-          codigo[++index] = 0x00;
+          // codigo[++index] = 0x00;
+          // codigo[++index] = 0x00;
+          // codigo[++index] = 0x00;
         }
         else {
-            calculaDeslocamento(line, parsedLines, idx1, codigo, &index);
-
+          calculaDeslocamento(line, parsedLines, idx1, codigo, &index);
         }
       }
       break;
@@ -129,26 +132,11 @@ funcp CompilaLinB(FILE *f, unsigned char codigo[]) {
     }
   }
 
-  printf("Codigo = { ");
-  for (int i = 0; i < +index; i++) {
-    printf("%02x ", codigo[i]);
-  }
-  printf("}\n");
-
-  printf("Num linhas: %d\n", line);
-  printf("Linhas = { ");
-
-  for (int i = 1; i < line; i++) {
-
-    printf("%d ", parsedLines[i]);
-  }
-  printf("}\n");
-
-  funcp foda = (funcp)codigo;
-  return foda;
+  funcp linb = (funcp)codigo;
+  return linb;
 }
 
-void movlEcx(char c, int n, unsigned char codigo[], int *index) {
+void movlEcx(char c, int n, unsigned char codigo[], int *index) { //Move valores para ECX, onde fazemos contas
   int index2 = *index;
 
   switch (c) {
@@ -199,7 +187,7 @@ void movlEcx(char c, int n, unsigned char codigo[], int *index) {
   *index = index2;
 }
 
-void addlEcx(char c, int n, unsigned char codigo[], int *index) {
+void addlEcx(char c, int n, unsigned char codigo[], int *index) { //Operacao de ADDL ao ecx
   int index2 = *index;
   switch (c) {
   case '$':
@@ -243,7 +231,7 @@ void addlEcx(char c, int n, unsigned char codigo[], int *index) {
   *index = index2;
 }
 
-void sublEcx(char c, int n, unsigned char codigo[], int *index) {
+void sublEcx(char c, int n, unsigned char codigo[], int *index) { //operacao de SUBL ao ecx
   int index2 = *index;
   switch (c) {
   case '$':
@@ -287,7 +275,7 @@ void sublEcx(char c, int n, unsigned char codigo[], int *index) {
   *index = index2;
 }
 
-void imullEcx(char c, int n, unsigned char codigo[], int *index) {
+void imullEcx(char c, int n, unsigned char codigo[], int *index) { //Operacao de imull ao ECX
   int index2 = *index;
   switch (c) {
   case '$':
@@ -333,7 +321,7 @@ void imullEcx(char c, int n, unsigned char codigo[], int *index) {
   *index = index2;
 }
 
-void atribui(char var0, int idx0, unsigned char codigo[], int *index) {
+void atribui(char var0, int idx0, unsigned char codigo[], int *index) { //Atribui valores à uma variavel local ou parametro
   int index2 = *index;
   if (var0 == 'v') {
     // Escrever o inicio de movl de ecx pra pilha
@@ -371,7 +359,7 @@ void atribui(char var0, int idx0, unsigned char codigo[], int *index) {
 }
 
 void soma(char var0, int idx0, char var1, int idx1, char var2, int idx2,
-          unsigned char codigo[], int *index) {
+          unsigned char codigo[], int *index) { //Operacao em uma linha com soma
 
   // Movl primeiro parametro pra %ecx
   movlEcx(var1, idx1, codigo, index);
@@ -384,7 +372,7 @@ void soma(char var0, int idx0, char var1, int idx1, char var2, int idx2,
 }
 
 void mult(char var0, int idx0, char var1, int idx1, char var2, int idx2,
-          unsigned char codigo[], int *index) {
+          unsigned char codigo[], int *index) { //Operacao em uma linha com multiplicacao
 
   // Movl primeiro parametro pra %ecx
   movlEcx(var1, idx1, codigo, index);
@@ -397,7 +385,7 @@ void mult(char var0, int idx0, char var1, int idx1, char var2, int idx2,
 }
 
 void sub(char var0, int idx0, char var1, int idx1, char var2, int idx2,
-         unsigned char codigo[], int *index) {
+         unsigned char codigo[], int *index) { //Operacao em uma linha com Multiplicacao
   // Movl primeiro parametro pra %ecx
   movlEcx(var1, idx1, codigo, index);
 
@@ -408,7 +396,7 @@ void sub(char var0, int idx0, char var1, int idx1, char var2, int idx2,
   atribui(var0, idx0, codigo, index);
 }
 
-void compara(char var0, int idx0, int idx1, unsigned char codigo[], int *index){
+void compara(char var0, int idx0, int idx1, unsigned char codigo[], int *index){ //Operacao de CMPL com 0 para o if
   int index2 = *index;
 
   // Código inicial
@@ -416,8 +404,7 @@ void compara(char var0, int idx0, int idx1, unsigned char codigo[], int *index){
   if (var0 == 'v'){
 
     // Códigos iniciais
-    codigo[++(index2)] = 0x7c;
-    codigo[++(index2)] = 0x24;
+    codigo[++(index2)] = 0x7d;
 
     switch (idx0) // Pra qual variavel estatica sera atribuido?
     {
@@ -445,32 +432,29 @@ void compara(char var0, int idx0, int idx1, unsigned char codigo[], int *index){
   }
 
   codigo[++(index2)] = 0x00;
-  codigo[++(index2)] = 0x0f;
-  codigo[++(index2)] = 0x85;
-
-
+  codigo[++(index2)] = 0x75;
   *index = index2;
 }
 
 
-void calculaDeslocamento(int linhaAtual, int parsedLines[], int num, unsigned char codigo[], int *index) {
+void calculaDeslocamento(int linhaAtual, int parsedLines[], int num, unsigned char codigo[], int *index) { //Calcula o deslocamento feito pelo IF
   int index2 = *index;
   int deslocamento;
 
   deslocamento = parsedLines[num - 1] - parsedLines[linhaAtual];
-  printf("Line: %d\n", linhaAtual);
-  printf("Linha atual: %d\n", parsedLines[linhaAtual + 1]);
-  printf("Linha final: %d\n", parsedLines[num - 1]);
-  printf("Deslocamento: %d\n", deslocamento);
 
-  int numBytes = sizeof(int);
-  for (int i = 0; i < numBytes; i++) {
-    codigo[++(index2)] = (deslocamento >> (i * 8)) & 0xFF;
+  if (deslocamento >= -128 && deslocamento <= 127) {
+    // Deslocamento cabe em um byte
+    unsigned char hex = (unsigned char) deslocamento;
+    codigo[++(index2)] = hex;
+  } else {
+    // Deslocamento maior que um byte, salto condicional longo
+    int deslocamento_long = deslocamento - 2; // Ajuste para a diferença de tamanho de instrução
+    codigo[(*index) - 1] = 0x0F;
+    codigo[++index2] = 0x85; 
+    for (int i = 0; i < 4; i++) {
+      codigo[++index2] = (deslocamento_long >> (i * 8)) & 0xFF;
+    }
   }
- // unsigned char hex = (unsigned char) deslocamento;
- // codigo[++(index2)] = hex;
-
   *index = index2;
 }
-
-
